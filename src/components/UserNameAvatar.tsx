@@ -1,6 +1,6 @@
 import { Avatar } from "@mui/material"
 import { useContext, useState } from "react"
-import { UserContext } from "../App"
+import { UserContext } from "./UserProvider"
 import UpdateUser from "./UpdateUser";
 
 

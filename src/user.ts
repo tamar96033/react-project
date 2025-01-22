@@ -12,7 +12,7 @@ export type User={
 }
 
 type Action = {
-    type: 'ADD' | 'UPDATE' | 'REMOVE',
+    type: 'POST' | 'PUT' | 'REMOVE',
     data: Partial<User> 
 }
 
@@ -21,7 +21,7 @@ export const userReducer=(
 ):User=>{
     
     switch(action.type){
-        case 'UPDATE':
+        case 'PUT':
             const {firstName, lastName, password, email,  address, phone} = action.data as Partial<User>
            console.log('on update action of userReducer function');
            console.log('firstName: '+firstName);
