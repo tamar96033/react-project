@@ -1,6 +1,7 @@
-import { FormEvent, useContext, useEffect, useRef, useState } from "react";
+import { Box, Button, Modal, TextField } from "@mui/material"
+import { FormEvent, useContext, useEffect, useRef } from "react";
 import { UserContext, UserContextType } from "./UserProvider";
-import { Box, Button, Modal, TextField } from "@mui/material";
+import { User } from "../user";
 
 const style = {
     position: 'absolute',
@@ -14,28 +15,26 @@ const style = {
     p: 4,
 };
 
-const UpdateUser = () => {
-
-    const [showForm, setShowForm] = useState(false)
+const EntriesForm = () => {//{method}:{method: string}
 
     const firstNameRef = useRef<HTMLInputElement>(null);
-    const lastNameRef = useRef<HTMLInputElement>(null);
-    const passwordRef = useRef<HTMLInputElement>(null);
-    const emailRef = useRef<HTMLInputElement>(null);
-    const phoneRef = useRef<HTMLInputElement>(null);
-    const { user, userDispatch } = useContext<UserContextType | undefined>(UserContext) || { user: null, userDispatch: () => { } };
+        const lastNameRef = useRef<HTMLInputElement>(null);
+        const passwordRef = useRef<HTMLInputElement>(null);
+        const emailRef = useRef<HTMLInputElement>(null);
+        const phoneRef = useRef<HTMLInputElement>(null);
+        const { user, userDispatch } = useContext<UserContextType | undefined>(UserContext) || { user: null, userDispatch: () => { } };
+    
 
+    const updatedUser: Partial<User> = {
+        firstName: firstNameRef.current?.value || '',
+        lastName: lastNameRef.current?.value || '',
+        password: passwordRef.current?.value || '',
+        email: emailRef.current?.value || '',
+        phone: phoneRef.current?.value || '',
+    };
 
     const handleSubmit = async (e: FormEvent) => {
-        e.preventDefault();
-
-        const updatedUser = {
-            firstName: firstNameRef.current?.value || '',
-            lastName: lastNameRef.current?.value || '',
-            password: passwordRef.current?.value || '',
-            email: emailRef.current?.value || '',
-            phone: phoneRef.current?.value || '',
-        };
+        e.preventDefault()
 
         try {
             const response = await fetch('http://localhost:3000/api/user/', {
@@ -51,31 +50,25 @@ const UpdateUser = () => {
             if (!response.ok) {
                 throw new Error(data.message);
             }
-
-        
             console.log('user',user);
 
-            userDispatch({ type: 'PUT', data: { id: user?.id ?? 0, ...updatedUser } }); // Dispatch updated user to context
+            userDispatch({ type: 'PUT', data: { id: data.userId, ...updatedUser } });
+            console.log('updatedUser ', updatedUser);
+            console.log('user',user);
             
-            alert('User updated successfully!'); // Show success message
-           
-            setShowForm(false)    
+            alert('User updated successfully!');
+
         } catch (error: any) {
             console.error('Update failed:', error.message);
             alert(error.message); 
         }
+    }
+useEffect(()=>{
+console.log(user);
 
-    };
-    
-    useEffect(() => {
-        console.log("Updated user:", user);
-    }, [user]);
-
-    return (<>
-        {!showForm && <Button onClick={() => { setShowForm(true) }}>update</Button>}
-
-        {/* {showForm && <EntriesForm method="PUT"/>} */}
-        {showForm && <Modal open={showForm} //onClose={() => { setShowForm(false); }}
+},[user])
+    return(<>
+    <Modal open={true}//open={showForm} //onClose={() => { setShowForm(false); }}
             aria-labelledby="modal-modal-title"
             aria-describedby="modal-modal-description">
             <Box sx={style}>
@@ -86,8 +79,7 @@ const UpdateUser = () => {
                 <TextField label="Phone" inputRef={phoneRef} defaultValue={user?.phone} />
                 <Button onClick={handleSubmit}>Submit</Button>
             </Box>
-        </Modal>}
-    </>);
-};
-
-export default UpdateUser;
+        </Modal>
+        </>)
+}
+export default EntriesForm

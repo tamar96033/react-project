@@ -1,9 +1,8 @@
 import { FormEvent, useContext, useRef, useState } from "react"
-import { UserContext } from "./UserProvider"
-import UpdateUser from "./UpdateUser";
-import { Box, Button, Modal, TextField } from "@mui/material";
+import { UserContext, UserContextType } from "./UserProvider"
+import { Box, Button, Modal, SxProps, TextField, Theme } from "@mui/material";
 
-const style = {
+const style: SxProps<Theme> = {
     position: 'absolute',
     top: '50%',
     left: '50%',
@@ -13,75 +12,77 @@ const style = {
     border: '2px solid #000',
     boxShadow: 24,
     p: 4,
-  }
+}
+
+// interface ActionType {
+//     type: string;
+//     payload?: any;
+// }
+
 
 const Login = () => {
-    const { user, userDispatch } = useContext(UserContext)
-    //const [isLogin, setIsLogin] = useState(false)
-    const [isShow, setIsShow] = useState(false)//to show the checking 
-    const [isGood, setIsGood] = useState(true)//to show updating user
+    const { user, userDispatch } = useContext<UserContextType | undefined>(UserContext) || { user: null, userDispatch: () => {} };
+   
+    const [isShow, setIsShow] = useState(false)
+    const [isGood, setIsGood] = useState(true)
     const [name, setName] = useState('')
     const [password, setPassword] = useState('');
-    //const [open, setOpen] = useState(true)
 
 
-    // const handleLogin = () => {
-    //     console.log('in handle login');
-        
-
-    //     //setOpen(false)
-    //     if (user.firstName != name) {
-    //         setIsGood(false)
-    //     }
-    //     else {
-    //         setIsGood(true)
-    //     }
-    // }
     const nameRef = useRef<HTMLInputElement>(null);
     const passwordRef = useRef<HTMLInputElement>(null);
+
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
         try {
-            const response = await fetch('http://localhost:3000/api/user/login', {
+            const response = await fetch('http://localhost:3000/api/user/login',{
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ 
-                    name: nameRef.current?.value || '', // Use .current?.value
-                    password: passwordRef.current?.value || '' // Use .current?.value
+                body: JSON.stringify({
+                    firstName: nameRef.current?.value || '',
+                    password: passwordRef.current?.value || ''
                 }),
             });
 
             const data = await response.json();
+            console.log('data ',data);
+            console.log(data.user);
+            
+
             if (!response.ok) {
                 throw new Error(data.message);
             }
-            userDispatch({ type: 'PUT', payload: { id: data.userId, nameRef } }); // Dispatch user to context
-            alert(data.message); // Show success message
+            userDispatch({ type: 'PUT', data: data.user }); //{ id: data.userId, firstName: nameRef.toString() }// Dispatch user to context
+            console.log(user)
+            setIsShow(false)
+
         } catch (error: any) {
-            console.error('Login failed:', error?.message);
-            alert(error.message); // Show error message
+            alert('the user is not in the DB');
             
+            //console.error('Login failed:', error?.message);
         }
     };
 
 
     return (<>
-        <button onClick={() => { setIsShow(!isShow) }}>login</button>
+        <Button onClick={() => { setIsShow(!isShow) }}>login</Button>
         {isShow &&
             <Modal open={isShow} onClose={() => { setIsShow(false) }}
                 aria-labelledby="modal-modal-title"
                 aria-describedby="modal-modal-description">
                 <Box sx={style}>
-                    <TextField label="name for checking" inputRef={nameRef} onChange={(e) => setName(e.target.value)}  defaultValue={user.firstName}/>
-                    <TextField label="password for checking" type="password" inputRef={passwordRef} onChange={(e) => setPassword(e.target.value)}  defaultValue={user.password}/>
+                    <TextField label="name for checking" inputRef={nameRef} onChange={(e) => setName(e.target.value)} defaultValue={user?.firstName} />
+                    <TextField label="password for checking" type="password" inputRef={passwordRef} onChange={(e) => setPassword(e.target.value)} defaultValue={user.password} />
                     <Button onClick={handleSubmit}>submit</Button>
                 </Box>
             </Modal>
         }
-        {!isGood && <UpdateUser />}
+        {/* {!isGood && <UpdateUser />} */}
     </>)
 }
+
+
 
 export default Login

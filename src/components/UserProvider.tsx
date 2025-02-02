@@ -1,7 +1,12 @@
-import { createContext, ReactNode, useReducer } from 'react';
-import { User, userReducer } from '../user';
+import { createContext, Dispatch, ReactNode, useReducer } from 'react';
+import { User, userReducer,Action } from '../user';
 
-export const UserContext = createContext({});
+export type UserContextType = {
+    user: User;
+    userDispatch: Dispatch<Action>;
+}
+
+export const UserContext = createContext<UserContextType | undefined>(undefined);
 
 const UserProvider = ({ children }:{ children: ReactNode }) => {
     const [user, userDispatch] = useReducer(userReducer, {} as User);

@@ -1,6 +1,7 @@
-import { FormEvent, useContext, useEffect, useRef, useState } from "react";
-import { UserContext, UserContextType } from "./UserProvider";
-import { Box, Button, Modal, TextField } from "@mui/material";
+import { Box, Button, Modal, TextField } from "@mui/material"
+import { FormEvent, useContext, useRef, useState } from "react"
+import { UserContextType, UserContext } from "./UserProvider";
+
 
 const style = {
     position: 'absolute',
@@ -14,10 +15,10 @@ const style = {
     p: 4,
 };
 
-const UpdateUser = () => {
+
+const Register = () => {
 
     const [showForm, setShowForm] = useState(false)
-
     const firstNameRef = useRef<HTMLInputElement>(null);
     const lastNameRef = useRef<HTMLInputElement>(null);
     const passwordRef = useRef<HTMLInputElement>(null);
@@ -25,10 +26,8 @@ const UpdateUser = () => {
     const phoneRef = useRef<HTMLInputElement>(null);
     const { user, userDispatch } = useContext<UserContextType | undefined>(UserContext) || { user: null, userDispatch: () => { } };
 
-
     const handleSubmit = async (e: FormEvent) => {
-        e.preventDefault();
-
+        e.preventDefault()
         const updatedUser = {
             firstName: firstNameRef.current?.value || '',
             lastName: lastNameRef.current?.value || '',
@@ -36,45 +35,36 @@ const UpdateUser = () => {
             email: emailRef.current?.value || '',
             phone: phoneRef.current?.value || '',
         };
-
         try {
-            const response = await fetch('http://localhost:3000/api/user/', {
-                method: 'PUT',
+            const response = await fetch('http://localhost:3000/api/user/register', {
+                method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'user-id': user?.id?.toString() ?? '0'
                 },
-                body: JSON.stringify(updatedUser),
+                body: JSON.stringify({
+                    firstName: firstNameRef.current?.value || "",
+                    password: passwordRef.current?.value || "",
+                })
             });
 
             const data = await response.json();
             if (!response.ok) {
                 throw new Error(data.message);
             }
+            console.log("Dispatching:", { id: data.userId, ...updatedUser });
+            //I must change the type for post!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            userDispatch({ type: 'POST', data: { id: data.userId, ...updatedUser } });
 
-        
-            console.log('user',user);
-
-            userDispatch({ type: 'PUT', data: { id: user?.id ?? 0, ...updatedUser } }); // Dispatch updated user to context
-            
-            alert('User updated successfully!'); // Show success message
-           
-            setShowForm(false)    
+            alert('User updated successfully!');
+            setShowForm(false)
         } catch (error: any) {
             console.error('Update failed:', error.message);
-            alert(error.message); 
+            alert(error.message);
         }
-
-    };
-    
-    useEffect(() => {
-        console.log("Updated user:", user);
-    }, [user]);
+    }
 
     return (<>
-        {!showForm && <Button onClick={() => { setShowForm(true) }}>update</Button>}
-
-        {/* {showForm && <EntriesForm method="PUT"/>} */}
+        {!showForm && <Button onClick={() => { setShowForm(true) }}>register</Button>}
         {showForm && <Modal open={showForm} //onClose={() => { setShowForm(false); }}
             aria-labelledby="modal-modal-title"
             aria-describedby="modal-modal-description">
@@ -87,7 +77,7 @@ const UpdateUser = () => {
                 <Button onClick={handleSubmit}>Submit</Button>
             </Box>
         </Modal>}
-    </>);
-};
+    </>)
+}
 
-export default UpdateUser;
+export default Register
