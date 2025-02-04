@@ -14,20 +14,10 @@ const style: SxProps<Theme> = {
     p: 4,
 }
 
-// interface ActionType {
-//     type: string;
-//     payload?: any;
-// }
-
-
 const Login = () => {
     const { user, userDispatch } = useContext<UserContextType | undefined>(UserContext) || { user: null, userDispatch: () => {} };
    
     const [isShow, setIsShow] = useState(false)
-    const [isGood, setIsGood] = useState(true)
-    const [name, setName] = useState('')
-    const [password, setPassword] = useState('');
-
 
     const nameRef = useRef<HTMLInputElement>(null);
     const passwordRef = useRef<HTMLInputElement>(null);
@@ -46,22 +36,16 @@ const Login = () => {
                 }),
             });
 
-            const data = await response.json();
-            console.log('data ',data);
-            console.log(data.user);
-            
+            const data = await response.json();            
 
             if (!response.ok) {
                 throw new Error(data.message);
             }
-            userDispatch({ type: 'PUT', data: data.user }); //{ id: data.userId, firstName: nameRef.toString() }// Dispatch user to context
-            console.log(user)
+            userDispatch({ type: 'PUT', data: data.user }); 
             setIsShow(false)
 
         } catch (error: any) {
             alert('the user is not in the DB');
-            
-            //console.error('Login failed:', error?.message);
         }
     };
 
@@ -73,13 +57,12 @@ const Login = () => {
                 aria-labelledby="modal-modal-title"
                 aria-describedby="modal-modal-description">
                 <Box sx={style}>
-                    <TextField label="name for checking" inputRef={nameRef} onChange={(e) => setName(e.target.value)} defaultValue={user?.firstName} />
-                    <TextField label="password for checking" type="password" inputRef={passwordRef} onChange={(e) => setPassword(e.target.value)} defaultValue={user.password} />
+                    <TextField label="name for checking" inputRef={nameRef} defaultValue={user?.firstName} />
+                    <TextField label="password for checking" type="password" inputRef={passwordRef} defaultValue={user?.password} />
                     <Button onClick={handleSubmit}>submit</Button>
                 </Box>
             </Modal>
         }
-        {/* {!isGood && <UpdateUser />} */}
     </>)
 }
 

@@ -1,4 +1,4 @@
-import { FormEvent, useContext, useEffect, useRef, useState } from "react";
+import { FormEvent, useContext, useRef, useState } from "react";
 import { UserContext, UserContextType } from "./UserProvider";
 import { Box, Button, Modal, TextField } from "@mui/material";
 
@@ -52,12 +52,8 @@ const UpdateUser = () => {
                 throw new Error(data.message);
             }
 
-        
-            console.log('user',user);
-
-            userDispatch({ type: 'PUT', data: { id: user?.id ?? 0, ...updatedUser } }); // Dispatch updated user to context
-            
-            alert('User updated successfully!'); // Show success message
+            userDispatch({ type: 'PUT', data: { id: user?.id ?? 0, ...updatedUser } }); 
+            alert('User updated successfully!'); 
            
             setShowForm(false)    
         } catch (error: any) {
@@ -67,15 +63,11 @@ const UpdateUser = () => {
 
     };
     
-    useEffect(() => {
-        console.log("Updated user:", user);
-    }, [user]);
 
     return (<>
         {!showForm && <Button onClick={() => { setShowForm(true) }}>update</Button>}
 
-        {/* {showForm && <EntriesForm method="PUT"/>} */}
-        {showForm && <Modal open={showForm} //onClose={() => { setShowForm(false); }}
+        {showForm && <Modal open={showForm} 
             aria-labelledby="modal-modal-title"
             aria-describedby="modal-modal-description">
             <Box sx={style}>

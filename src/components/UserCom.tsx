@@ -10,7 +10,6 @@ const style: React.CSSProperties = {
     position: 'absolute',
     top: '2%',
     left: '2%',
-    //transform: 'translate(-50%, -50%)',
 };
 
 const UserCom = () => {

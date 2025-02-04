@@ -1,6 +1,5 @@
 
 export type User = {
-    //שם פרטי, שם משפחה, מייל, סיסמא, כתובת, טלפון
     id?: number,
     firstName?: string,
     lastName?: string,

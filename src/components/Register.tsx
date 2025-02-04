@@ -51,21 +51,19 @@ const Register = () => {
             if (!response.ok) {
                 throw new Error(data.message);
             }
-            console.log("Dispatching:", { id: data.userId, ...updatedUser });
-            //I must change the type for post!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            
             userDispatch({ type: 'POST', data: { id: data.userId, ...updatedUser } });
 
             alert('User updated successfully!');
             setShowForm(false)
         } catch (error: any) {
-            console.error('Update failed:', error.message);
             alert(error.message);
         }
     }
 
     return (<>
         {!showForm && <Button onClick={() => { setShowForm(true) }}>register</Button>}
-        {showForm && <Modal open={showForm} //onClose={() => { setShowForm(false); }}
+        {showForm && <Modal open={showForm}
             aria-labelledby="modal-modal-title"
             aria-describedby="modal-modal-description">
             <Box sx={style}>
